@@ -71,7 +71,7 @@ export default function SelectMinion() {
       return;
     }
 
-    await fetch("http://localhost:8080/game/minions", { /* ... */ });
+    await fetch(`${API}/game/minions`, { /* ... */ });
     navigate("/setup-strategy", { state: { mode, minionTypes: selected } });
   };
 

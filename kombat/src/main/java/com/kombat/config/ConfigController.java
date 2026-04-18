@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/config")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {
+    "http://localhost:5173",
+    "https://kombat-nine.vercel.app"
+})
 public class ConfigController {
 
     @GetMapping(produces = "application/json")

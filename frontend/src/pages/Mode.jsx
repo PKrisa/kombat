@@ -11,7 +11,7 @@ export default function Mode() {
 
   const startGame = async (mode) => {
     try {
-      const res = await fetch("http://localhost:8080/game/mode", {
+      const res = await fetch(`${API}/game/mode`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

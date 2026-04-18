@@ -59,7 +59,7 @@ export default function SetupStrategy() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/game/parse", {
+      const res = await fetch(`${API}/game/parse`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,7 +98,7 @@ export default function SetupStrategy() {
         }
     }
 
-    await fetch("http://localhost:8080/game/setup", {
+    await fetch(`${API}/game/setup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data.map(item => ({
@@ -109,7 +109,7 @@ export default function SetupStrategy() {
       }))),
     });
 
-    await fetch("http://localhost:8080/game/start", {
+    await fetch(`${API}/game/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 

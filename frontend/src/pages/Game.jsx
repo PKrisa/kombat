@@ -42,14 +42,14 @@ function Game() {
   const socketRef = useRef(null);
 
   const loadGame = async () => {
-    const res = await fetch("http://localhost:8080/game/state");
+    const res = await fetch(`${API}/game/state`);
     const data = await res.json();
     setGameState(data);
   };
 
   useEffect(() => {
     const init = async () => {
-      const res = await fetch("http://localhost:8080/game/state");
+      const res = await fetch(`${API}/game/state`);
       const data = await res.json();
       setGameState(data);
     };
@@ -62,7 +62,7 @@ function Game() {
 
     const interval = setInterval(async () => {
 
-      await fetch("http://localhost:8080/game/turn", {
+      await fetch(`${API}/game/turn`, {
         method: "POST"
       });
 
@@ -94,7 +94,7 @@ function Game() {
 
     if (currentPlayerId === 2) { // bot
       const run = async () => {
-        await fetch("http://localhost:8080/game/turn", {
+        await fetch(`${API}/game/turn`, {
           method: "POST"
         });
         await loadGame();
@@ -129,7 +129,7 @@ function Game() {
 
   // next turn
   const nextTurn = async () => {
-    await fetch("http://localhost:8080/game/turn", {
+    await fetch(`${API}/game/turn`, {
       method: "POST"
     });
     await loadGame();
@@ -162,7 +162,7 @@ function Game() {
 
     if (currentPlayerId !== 1) return;
 
-    await fetch("http://localhost:8080/game/spawn", {
+    await fetch(`${API}/game/spawn`, {
       method: "POST",
       headers: {
         "Content-Type":"application/json"
@@ -181,7 +181,7 @@ function Game() {
 
     if (mode === 1 && !isMyTurn) return;
 
-    await fetch("http://localhost:8080/game/buy", {
+    await fetch(`${API}/game/buy`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -207,13 +207,13 @@ function Game() {
     }
 
     // solitaire mode
-    await fetch("http://localhost:8080/game/turn", {
+    await fetch(`${API}/game/turn`, {
       method: "POST"
     });
 
     await new Promise(r => setTimeout(r, 500));
 
-    await fetch("http://localhost:8080/game/turn", {
+    await fetch(`${API}/game/turn`, {
       method: "POST"
     });
 
