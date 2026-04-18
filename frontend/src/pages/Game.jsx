@@ -16,6 +16,7 @@ const hexWidth = 2 * hexSize;
 const hexHeight = Math.sqrt(3) * hexSize;
 const horizOffset = hexWidth * 0.75;
 const vertOffset = hexHeight * 0.5;
+const API = import.meta.env.VITE_API_URL;
 
 const getMinionImage = (type) => {
   switch (type) {

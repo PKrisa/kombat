@@ -5,6 +5,8 @@ import duelImg from "../assets/duel.png";
 import soloImg from "../assets/solitaire.png";
 import autoImg from "../assets/auto.png";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function Mode() {
   const navigate = useNavigate();
   const [hover, setHover] = useState(null);

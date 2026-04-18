@@ -8,6 +8,8 @@ import mageImg from "../assets/mage.png";
 import knightImg from "../assets/knight.png";
 import shooterImg from "../assets/shooter.png";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function SetupStrategy() {
   const navigate = useNavigate();
   const location = useLocation();
