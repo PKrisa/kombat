@@ -66,7 +66,6 @@ public class DuelWebSocketHandler extends TextWebSocketHandler {
                 }
             }
 
-            // ในกรณี SELECT_MINIONS
             case "SELECT_MINIONS" -> {
                 Room room = RoomManager.findBySession(session);
 
@@ -79,7 +78,6 @@ public class DuelWebSocketHandler extends TextWebSocketHandler {
                         room.guestMinions = types;
                     }
 
-                    // แก้ไขตรงนี้: ป้องกันค่า null
                     Map<String, Object> updateData = new HashMap<>();
                     updateData.put("type", "MINION_UPDATE");
                     updateData.put("hostMinions", room.hostMinions != null ? room.hostMinions : List.of());
@@ -94,18 +92,15 @@ public class DuelWebSocketHandler extends TextWebSocketHandler {
                 }
             }
 
-            // ในกรณี READY_MINIONS 
             case "READY_MINIONS" -> {
                 Room room = RoomManager.findBySession(session);
                 if (room != null) {
-                    // 1. บันทึกสถานะว่าใครกด Ready
                     if (session == room.host) {
                         room.hostMinionReady = true;
                     } else {
                         room.guestMinionReady = true;
                     }
 
-                    // 2. ส่งสถานะ Update กลับไป (เพื่อให้ UI ฝั่ง Client ขึ้น ✅)
                     Map<String, Object> updateData = new HashMap<>();
                     updateData.put("type", "MINION_UPDATE");
                     updateData.put("hostMinions", room.hostMinions != null ? room.hostMinions : List.of());
@@ -114,7 +109,6 @@ public class DuelWebSocketHandler extends TextWebSocketHandler {
                     updateData.put("guestReady", room.guestMinionReady);
                     sendToBoth(room, updateData);
 
-                    // 3. เช็คว่าพร้อมทั้งสองคนหรือยัง?
                     if (room.hostMinionReady && room.guestMinionReady) {
 
                         List<String> host = room.hostMinions;
@@ -139,7 +133,6 @@ public class DuelWebSocketHandler extends TextWebSocketHandler {
                 Room room = RoomManager.findBySession(session);
                 room.setupData = (List<Map<String,Object>>) data.get("data");
                 if (room != null) {
-                    // ดึงข้อมูลที่ส่งมาจาก Player 1
                     Object strategyData = data.get("data");
                     Map names = (Map)data.get("names");
 
@@ -151,7 +144,6 @@ public class DuelWebSocketHandler extends TextWebSocketHandler {
                     System.out.println("HOST=" + room.hostName);
                     System.out.println("GUEST=" + room.guestName);
 
-                    // ส่งต่อไปให้ทั้งสองฝั่ง (เพื่อให้ Player 2 รับรู้)
                     sendToBoth(room, Map.of(
                         "type", "STRATEGY_SUBMITTED",
                         "data", strategyData,

@@ -19,7 +19,6 @@ export default function SelectMinion() {
   const socketRef = useRef(null);
   const [myReady, setMyReady] = useState(false);
 
-  // กัน refresh แล้วพัง
   if (!location.state) {
     navigate("/mode");
     return null;
@@ -31,7 +30,6 @@ export default function SelectMinion() {
 
   const minionTypes = ["tank", "archer", "mage", "knight", "shooter"];
 
-  // map type → image
   const typeImages = {
     tank: tankImg,
     archer: archerImg,
@@ -41,21 +39,16 @@ export default function SelectMinion() {
   };
 
   const toggleType = (type) => {
-    // 1. คำนวณค่า updated list ก่อน
     let updated = [];
     if (selected.includes(type)) {
-      // ถ้ามีอยู่แล้วให้เอาออก
       updated = selected.filter((t) => t !== type);
     } else {
-      // ถ้ายังไม่มี และยังไม่เกิน 5 ให้เพิ่มเข้าไป
       if (selected.length >= 5) return;
       updated = [...selected, type];
     }
 
-    // 2. อัปเดต State (React จะเอาไป render UI)
     setSelected(updated);
 
-    // 3. ส่งข้อมูลเข้า Socket แยกออกมาด้านนอก
     if (mode === 1 && socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({
         type: "SELECT_MINIONS",
@@ -71,16 +64,13 @@ export default function SelectMinion() {
     }
 
     if (mode === 1) {
-      // 1. บอก Server ว่าเราพร้อมแล้ว
       socketRef.current.send(JSON.stringify({
         type: "READY_MINIONS"
       }));
-      // 2. จบฟังก์ชันแค่นี้ ไม่ต้อง navigate เอง! 
-      // เดี๋ยว useEffect จะพาไปเมื่อได้รับ BOTH_READY
+
       return;
     }
 
-    // --- โหมด Single Player (ถ้ามี) ---
     await fetch("http://localhost:8080/game/minions", { /* ... */ });
     navigate("/setup-strategy", { state: { mode, minionTypes: selected } });
   };
@@ -109,13 +99,12 @@ export default function SelectMinion() {
         }
       }
 
-      // 📍 ใน SelectMinion.js หาบรรทัดนี้:
       if (data.type === "BOTH_READY") {
         navigate("/setup-strategy", {
           state: {
             mode: 1,
             minionTypes: data.finalMinions,
-            role: role // 🔥 เพิ่มบรรทัดนี้เข้าไป!
+            role: role
           }
         });
       }

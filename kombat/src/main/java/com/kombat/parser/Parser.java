@@ -52,23 +52,23 @@ public class Parser {
     }
 
     private Statement parseIf() {
-        tokenizer.nextToken(); // skip "if"
+        tokenizer.nextToken();
 
         if (!tokenizer.peekToken().equals("(")) {
             throw new RuntimeException("Expected '(' after 'if', but found: " + tokenizer.peekToken());
         }
-        tokenizer.nextToken(); // skip '('
+        tokenizer.nextToken();
         Expression condition = parseExpression();
 
         if (!tokenizer.peekToken().equals(")")) {
             throw new RuntimeException("Expected ')' after condition, but found: " + tokenizer.peekToken());
         }
-        tokenizer.nextToken(); // skip ')'
+        tokenizer.nextToken();
 
         Statement thenBranch;
         switch (tokenizer.peekToken()) {
             case "then" -> {
-                tokenizer.nextToken(); // skip "then"
+                tokenizer.nextToken();
                 thenBranch = parseStatement();
             }
             case "{" -> thenBranch = parseBlock();

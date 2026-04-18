@@ -7,7 +7,6 @@ function Config() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // 🔥 โหลด config จาก backend
   useEffect(() => {
     fetch("http://localhost:8080/api/config")
       .then(res => res.json())
@@ -21,7 +20,7 @@ function Config() {
       });
   }, []);
 
-  // 🔧 handle input change
+  // handle input change
   const handleChange = (e) => {
     setConfig({
       ...config,
@@ -29,7 +28,7 @@ function Config() {
     });
   };
 
-  // 💾 save config
+  // save config
   const saveConfig = () => {
     fetch("http://localhost:8080/api/config", {
       method: "POST",

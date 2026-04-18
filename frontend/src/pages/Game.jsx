@@ -4,7 +4,6 @@ import bg from "../assets/home-background.png";
 import { useNavigate } from "react-router-dom";
 import { connectSocket } from "../socket";
 
-// 🔥 ใส่รูปตาม type
 import tankImg from "../assets/tank.png";
 import archerImg from "../assets/archer.png";
 import mageImg from "../assets/mage.png";
@@ -18,7 +17,6 @@ const hexHeight = Math.sqrt(3) * hexSize;
 const horizOffset = hexWidth * 0.75;
 const vertOffset = hexHeight * 0.5;
 
-// 🔥 map type → รูป
 const getMinionImage = (type) => {
   switch (type) {
     case "tank": return tankImg;
@@ -49,16 +47,6 @@ function Game() {
     setGameState(data);
   };
 
-  const startGame = async () => {
-    await fetch("http://localhost:8080/game/start", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ mode: mode })
-    });
-  };
-
   useEffect(() => {
     const init = async () => {
       const res = await fetch("http://localhost:8080/game/state");
@@ -83,7 +71,7 @@ function Game() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []); // 🔥 แก้ตรงนี้
+  }, []);
 
   const currentPlayerId = gameState?.currentPlayer;
 
@@ -139,7 +127,7 @@ function Game() {
   const currentPlayer =
     gameState?.players?.find(p => p.id === currentPlayerId);
 
-  // 🔥 next turn
+  // next turn
   const nextTurn = async () => {
     await fetch("http://localhost:8080/game/turn", {
       method: "POST"
@@ -172,7 +160,6 @@ function Game() {
       return;
     }
 
-    // mode ปกติ
     if (currentPlayerId !== 1) return;
 
     await fetch("http://localhost:8080/game/spawn", {
@@ -262,8 +249,6 @@ function Game() {
           p => p.row === row && p.col === col
         );
 
-
-        // 🔥 สีช่องซื้อได้ (ต้องไม่ใช่ spawn เดิม)
         if (isSpawnP1) fillColor = "#6B8A7A";
         else if (isSpawnP2) fillColor = "#DE802B";
 
@@ -274,7 +259,6 @@ function Game() {
           fillColor = "#BFA28C";
         }
 
-        // 🔥 หา minion
         const minionsHere =
           gameState?.minions?.filter(
             m => m.row === row && m.col === col
@@ -295,7 +279,7 @@ function Game() {
               onMouseLeave={() => setHovered(null)}
               onClick={() => {
                 if ((mode === 2 || role === "host") && canBuyP1) {
-                  setSelectedCell({ row, col }); // 🔥 แทน buy ทันที
+                  setSelectedCell({ row, col });
                 } else if (role === "guest" && canBuyP2) {
                   setSelectedCell({row,col});
                 }
@@ -315,7 +299,7 @@ function Game() {
                   stroke={minion.owner === 1 ? "#6B8A7A" : "#DE802B"}
                   strokeWidth="3"
                 />
-                {/* 🔥 รูป */}
+                {/* รูป */}
                 <image
                   href={getMinionImage(minion.type)}
                   x={x - 20}
@@ -324,7 +308,7 @@ function Game() {
                   height="40"
                 />
 
-                {/* 🔥 HP BAR background */}
+                {/* HP BAR background */}
                 <rect
                   x={x - 20}
                   y={y + 18}
@@ -333,11 +317,11 @@ function Game() {
                   fill="gray"
                 />
 
-                {/* 🔥 HP BAR สีเขียว */}
+                {/* HP BAR สีเขียว */}
                 <rect
                   x={x - 20}
                   y={y + 18}
-                  width={(minion.hp / 100) * 40}  // 👈 ต้องมี hp จาก backend
+                  width={(minion.hp / 100) * 40}
                   height="5"
                   fill="limegreen"
                 />
@@ -381,7 +365,7 @@ function Game() {
             GAME OVER
           </h1>
 
-          <h2 style={{color:"white"}}>🏆 Winner: {gameState.winner}</h2>
+          <h2 style={{color:"white"}}>Winner: {gameState.winner}</h2>
           <p>{gameState.winReason}</p>
 
           <button
@@ -400,14 +384,14 @@ function Game() {
       <div style={{position:"absolute", top:80, left:20, color:"white"}}>
         Selected: {selectedTypes.join(", ")}
       </div>
-      {/* 🔹 Player 1 */}
+      {/* Player 1 */}
       
         <div style={styles.panelLeft}>
           <h3>{p1?.name}</h3>
-          <p>💰 Budget: {p1?.budget}</p>
-          <p>👾 Minions: {p1?.minionCount}</p>
+          <p>Budget: {p1?.budget}</p>
+          <p>Minions: {p1?.minionCount}</p>
 
-          {/* 🔥 minion bar */}
+          {/* minion bar */}
           {mode !== 3 && (mode === 2 || (role === "host" && isMyTurn)) && (
             <div style={styles.minionBarLeft}>
               {selectedTypes.map(type => (
@@ -416,7 +400,7 @@ function Game() {
                   src={getMinionImage(type)}
                   onClick={() => {
                     if (selectedType === type) {
-                      setSelectedType(null); // 🔥 ยกเลิก
+                      setSelectedType(null);
                     } else {
                       setSelectedType(type);
                     }
@@ -430,7 +414,7 @@ function Game() {
             </div>
           )}
 
-          {/* 🔥 end turn */}
+          {/* end turn */}
           {mode !== 3 && (mode === 2 || (role === "host" && isMyTurn)) && (
             <button style={styles.endBtnLeft} onClick={endTurn}>
               END TURN
@@ -438,7 +422,7 @@ function Game() {
           )}
         </div>
 
-      {/* 🔹 Turn */}
+      {/* Turn */}
       <h2 style={styles.turn}>Turn: {gameState.turn}</h2>
 
       <h3 style={{
@@ -451,7 +435,7 @@ function Game() {
         ▶ {currentPlayer?.name}'s turn
       </h3>
 
-      {/* 🔹 Board */}
+      {/* Board */}
       <div style={styles.boardWrapper}>
         <svg
           viewBox={`-20 -${hexHeight + 40} ${gridSize * horizOffset} ${
@@ -464,11 +448,11 @@ function Game() {
         </svg>
       </div>
 
-      {/* 🔹 Player 2 */}
+      {/* Player 2 */}
       <div style={styles.panelRight}>
         <h3>{p2?.name|| name2 || "Player 2"}</h3>
-        <p>💰 Budget: {p2?.budget}</p>
-        <p>👾 Minions: {p2?.minionCount}</p>
+        <p>Budget: {p2?.budget}</p>
+        <p>Minions: {p2?.minionCount}</p>
 
         {mode === 1 && role === "guest" && isMyTurn && (
             <div style={styles.minionBarLeft}>
@@ -478,7 +462,7 @@ function Game() {
                   src={getMinionImage(type)}
                   onClick={() => {
                     if (selectedType === type) {
-                      setSelectedType(null); // 🔥 ยกเลิก
+                      setSelectedType(null);
                     } else {
                       setSelectedType(type);
                     }
@@ -492,7 +476,7 @@ function Game() {
             </div>
           )}
 
-          {/* 🔥 end turn */}
+          {/* end turn */}
           {mode === 1 && role === "guest" && isMyTurn && (
             <button style={styles.endBtnLeft} onClick={endTurn}>
               END TURN

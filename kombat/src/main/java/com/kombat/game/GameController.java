@@ -95,7 +95,6 @@ public class GameController {
     public Map<String, Object> setMinionSetup(@RequestBody List<MinionSetup> setups) {
         minionSetups = setups;
 
-        // 🔥 debug ดูค่าทั้งหมด
         for (MinionSetup m : setups) {
             System.out.println("Name: " + m.name);
             System.out.println("Type: " + m.type);
@@ -164,7 +163,7 @@ public class GameController {
 
         boolean isGameOver = turn != null && turn.isGameOver();
 
-        // 🔹 players
+        // players
         List<Map<String, Object>> players = gs.getPlayers().values().stream()
             .map(p -> {
                 Map<String, Object> map = new java.util.HashMap<>();
@@ -176,7 +175,7 @@ public class GameController {
             })
             .collect(java.util.stream.Collectors.toList());
 
-        // 🔹 minions
+        // minions
         List<Map<String, Object>> minions = gs.getPlayers().values().stream()
             .flatMap(p -> p.getMinions().stream())
             .map(m -> {
@@ -280,7 +279,6 @@ public class GameController {
 
         Position pos = new Position(row, col);
 
-        // 🔥 ดึง config จาก setup
         long defense = turn.getDefense(type);
         Strategy strategy = turn.getStrategy(type);
         String name = turn.getMinionName(type);

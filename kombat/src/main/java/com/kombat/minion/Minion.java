@@ -71,7 +71,7 @@ public abstract class Minion {
     }
 
     public void execute(GameState gameState, Minion minion) {
-        if (isDone || !isAlive()) return; // 🔥 เพิ่มตรงนี้
+        if (isDone || !isAlive()) return;
 
         try {
             strategy.execute(gameState, minion);

@@ -79,7 +79,6 @@ public class Board {
         return board.get(position);
     }
 
-    // ✅ FIX: เช็คขอบ + กันชน
     public void moveMinion(Minion minion, Position newPosition) {
         if (!board.containsValue(minion)) {
             System.out.println("Not found minion on board");
@@ -133,13 +132,11 @@ public class Board {
                 ? spawn_area_p2
                 : spawn_area_p1;
 
-        // ❗ ห้ามซื้อซ้ำ
         if (playerSpawnZone.contains(newPosition)) {
             System.out.println("Already owned");
             return false;
         }
 
-        // ❗🔥 ห้ามทับอีกฝั่ง
         if (opponentZone.contains(newPosition)) {
             System.out.println("Cannot buy opponent zone!");
             return false;

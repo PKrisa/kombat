@@ -7,7 +7,6 @@ export default function Duel() {
   const [roomCode, setRoomCode] = useState("");
 
   const createRoom = () => {
-    // เดี๋ยวค่อยต่อ websocket ทีหลัง
     navigate("/waiting-room", {
       state: { role: "host" }
     });

@@ -49,7 +49,7 @@ export default function SetupStrategy() {
     setData(newData);
   };
 
-  // 🔥 parse strategy
+  // parse strategy
   const checkStrategy = async (index) => {
     const item = data[index];
 
@@ -129,7 +129,6 @@ export default function SetupStrategy() {
     });
     };
 
-  // สำหรับคนเขียน: ส่งไปให้อีกฝั่งตรวจ
   const handleSendStrategy = () => {
     for (let item of data) {
       if (!item.defense || !item.strategy || !item.valid) {
@@ -138,7 +137,6 @@ export default function SetupStrategy() {
       }
     }
 
-    // มั่นใจว่าส่งชื่อปัจจุบัน (name1, name2) ไปด้วยเสมอ
     socketRef.current.send(JSON.stringify({
       type: "SUBMIT_STRATEGY",
       data: data,
@@ -150,12 +148,10 @@ export default function SetupStrategy() {
     setSetupStatus("SUBMITTED");
   };
 
-  // สำหรับคนตรวจ: ยอมรับหรือปฏิเสธ
   const handleResponse = (isAccepted) => {
     socketRef.current.send(JSON.stringify({
       type: "RESPONSE_STRATEGY",
       action: isAccepted ? "ACCEPT" : "REJECT",
-      // ส่งชื่อแนบไปด้วยตอน Accept เพื่อให้ Socket Server กระจายชื่อที่ถูกต้อง
       names: { 
         name1: name1 || "Player1", 
         name2: name2 || "Player2" 
@@ -163,7 +159,6 @@ export default function SetupStrategy() {
     }));
   };
 
-  // สำหรับ Host: โยนสิทธิ์ให้ Guest เขียน
   const handlePassControl = () => {
     socketRef.current.send(JSON.stringify({
       type: "TRANSFER_EDITOR",
@@ -171,16 +166,12 @@ export default function SetupStrategy() {
     }));
   };
 
-  // เพิ่ม useRef สำหรับ Socket
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // 1. กำหนดสิทธิ์การแก้ไขเบื้องต้น
     if (mode === 1) {
-      // ให้ Host เป็นคนเริ่มเขียนก่อนโดย Default
       setIsEditor(role === "host");
       
-      // เชื่อมต่อ Socket
       const socket = connectSocket();
       socketRef.current = socket;
 
@@ -188,11 +179,10 @@ export default function SetupStrategy() {
         const res = JSON.parse(msg.data);
 
         if (res.type === "EDITOR_TRANSFERRED") {
-          setIsEditor(role === res.newEditor); // ถ้า role เราตรงกับที่ส่งมา ก็จะได้เป็นคนเขียน
+          setIsEditor(role === res.newEditor);
           setSetupStatus("PENDING");
         }
                 
-        // เมื่ออีกฝั่งส่ง Strategy มาให้ตรวจ
         if (res.type === "STRATEGY_SUBMITTED") {
           setData(res.data);
           setName1(res.names.name1);
@@ -200,7 +190,6 @@ export default function SetupStrategy() {
           setSetupStatus("SUBMITTED");
         }
         
-        // เมื่อผลการตัดสินออกมา (Accept/Reject)
         if (res.type === "STRATEGY_RESPONSE") {
           setSetupStatus(res.action === "ACCEPT" ? "ACCEPTED" : "REJECTED");
           if (res.action === "REJECT") {
@@ -208,13 +197,11 @@ export default function SetupStrategy() {
           }
         }
 
-        // เมื่อ Host โยนสิทธิ์ให้ Guest
         if (res.type === "EDITOR_TRANSFERRED") {
           setIsEditor(role === res.newEditor);
           setSetupStatus("PENDING");
         }
 
-        // ใน useEffect -> handleMessage
         if (res.type === "GAME_STARTED") {
 
           navigate("/game", {
@@ -227,7 +214,6 @@ export default function SetupStrategy() {
             }
           });
 
-          // แก้ GAME_STARTED ให้ส่ง names ไปด้วย
           sendToBoth(room, Map.of(
               "type", "GAME_STARTED",
               "names", Map.of(
@@ -237,17 +223,14 @@ export default function SetupStrategy() {
           ));
         }
 
-        // ภายใน handleMessage 
         if (res.type === "STRATEGY_SUBMITTED") {
           setData(res.data);
-          // อัปเดตชื่อจากที่ส่งมาใน socket
           if (res.names) {
             setName1(res.names.name1);
             setName2(res.names.name2);
           }
           setSetupStatus("SUBMITTED");
         }
-        // เพิ่มเข้าไปใน handleMessage ภายใน useEffect
         if (res.type === "UPDATE_NAME") {
           if (res.name1 !== undefined) setName1(res.name1);
           if (res.name2 !== undefined) setName2(res.name2);
@@ -257,7 +240,6 @@ export default function SetupStrategy() {
       socket.addEventListener("message", handleMessage);
       return () => socket.removeEventListener("message", handleMessage);
     } else {
-      // โหมด 2, 3 เป็น Editor ตลอดเวลา
       setIsEditor(true);
     }
   }, [mode, role]);
@@ -271,7 +253,6 @@ export default function SetupStrategy() {
         {mode !== 3 && (
           <div style={{ marginBottom: "30px", display: "flex", justifyContent: "center" }}>
             
-            {/* ถ้าเป็นโหมด Duel (1) ให้เช็ค role แต่ถ้าโหมดอื่นให้แสดงปกติ */}
             {mode === 1 ? (
               <>
                 {role === "host" ? (
@@ -304,7 +285,6 @@ export default function SetupStrategy() {
                 )}
               </>
             ) : (
-              /* กรณีโหมด Single Player หรือโหมดอื่นๆ ที่ไม่ใช่ Duel */
               <>
                 <input
                   placeholder="Player 1 name"
@@ -390,19 +370,16 @@ export default function SetupStrategy() {
 
         <div style={{ marginTop: "30px", textAlign: "center" }}>
   
-          {/* ส่วนที่ 1: โหมดเล่นคนเดียว/บอท */}
           {(mode === 2 || mode === 3) && (
             <button style={styles.startBtn} onClick={startGame}>
               START GAME
             </button>
           )}
 
-          {/* ส่วนที่ 2: โหมด Duel */}
           {mode === 1 && (
             <div style={styles.actionRow}>
               {isEditor ? (
                 <>
-                  {/* ฝั่งคนเขียน (ใครเป็น Editor จะเห็นชุดนี้) */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "center" }}>
                     <button 
                       style={{...styles.startBtn, marginBottom: "10px", opacity: setupStatus === "SUBMITTED" ? 0.5 : 1}} 
@@ -412,12 +389,11 @@ export default function SetupStrategy() {
                       {setupStatus === "REJECTED" ? "RE-SUBMIT STRATEGY" : "SEND FOR APPROVAL"}
                     </button>
                     
-                    {/* ปุ่มโยนสิทธิ์: แสดงเมื่อยังไม่ได้กดส่ง และเป็นโหมด Duel */}
                     {(setupStatus === "PENDING" || setupStatus === "REJECTED") && (
                       <button 
                         style={styles.passBtn} 
                         onClick={() => {
-                          const target = role === "host" ? "guest" : "host"; // โยนให้อีกฝ่าย
+                          const target = role === "host" ? "guest" : "host";
                           socketRef.current.send(JSON.stringify({
                             type: "TRANSFER_EDITOR",
                             newEditor: target
@@ -433,7 +409,7 @@ export default function SetupStrategy() {
                 </>
               ) : (
                 <>
-                  {/* ฝั่งคนตรวจ */}
+
                   {setupStatus === "SUBMITTED" ? (
                     <div style={styles.decisionGroup}>
                       <h3 style={{color: "white"}}>Opponent submitted strategy. Accept?</h3>
@@ -447,7 +423,6 @@ export default function SetupStrategy() {
                       <p style={{color: "white", fontSize: "20px", marginBottom: "15px"}}>
                         {setupStatus === "REJECTED" ? "Waiting for opponent to fix..." : "Opponent is setting up strategy..."}
                       </p>
-                      {/* ฝั่งคนรอ ก็ต้องเห็นปุ่มทวงสิทธิ์ (ถ้าต้องการ) หรือสามารถเพิ่มปุ่มขอสิทธิ์ตรงนี้ได้ */}
                     </div>
                   )}
                 </>
@@ -477,19 +452,19 @@ const styles = {
 
   overlay: {
     position: "fixed",
-    top: 0,      // เพิ่ม top
+    top: 0,    
     width: "100%",
-    bottom: 0,   // เพิ่ม bottom เพื่อให้ยืดตามความสูงจริงของ container
+    bottom: 0,  
     background: "rgba(0,0,0,0.4)",
-    zIndex: 0,   // ให้มั่นใจว่าอยู่หลัง Content
+    zIndex: 0,  
   },
   
   content: {
     position: "relative",
-    zIndex: 1, // ต้องมากกว่า Overlay
+    zIndex: 1,
     width: "100%",
     maxWidth: "900px",
-    paddingBottom: "100px", // เผื่อระยะด้านล่างให้สวยงาม
+    paddingBottom: "100px",
   },
 
   title: {
@@ -620,29 +595,26 @@ const styles = {
   },
 
   decisionGroup: {
-    background: "rgba(0,0,0,0.85)", // สีพื้นหลัง
+    background: "rgba(0,0,0,0.85)",
     padding: "20px",
     borderRadius: "15px",
-    marginTop: "20px", // เพิ่มระยะห่างจาก Card ด้านบน
-    width: "100%", // ให้เต็มความกว้างของ content
-    boxShadow: "0 8px 20px rgba(0,0,0,0.3)", // เงาเหมือน Card
-    boxSizing: "border-box", // สำคัญมาก
-    
-    // 🔥 แก้ไขหลัก: จัดวางปุ่มให้อยู่ตรงกลาง
+    marginTop: "20px", 
+    width: "100%", 
+    boxShadow: "0 8px 20px rgba(0,0,0,0.3)", 
+    boxSizing: "border-box",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: "10px", // ระยะห่างระหว่างหัวข้อกับกลุ่มปุ่ม
+    gap: "10px", 
   },
   
-  // และปรับ styles.row ภายใน decisionGroup ให้เป็นระเบียบ
   row: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start", // จัดปุ่มให้อยู่ตรงกลางในแนวนอน
+    justifyContent: "flex-start",
     gap: "15px",
-    marginTop: "10px", // ระยะห่างจากหัวข้อ "Opponent submitted..."
+    marginTop: "10px",
   },
 
   acceptBtn: {
@@ -679,7 +651,7 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0,0,0,0.6)", // พื้นหลังมืดลง
+    backgroundColor: "rgba(0,0,0,0.6)",
     zIndex: 9,
     display: "flex",
     justifyContent: "center",

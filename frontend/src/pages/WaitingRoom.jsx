@@ -41,7 +41,7 @@ export default function WaitingRoom() {
         navigate("/select-minion", { 
             state: { 
                 mode: 1,
-                role: role   // 🔥 เพิ่ม
+                role: role
             } 
             });
       }

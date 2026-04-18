@@ -117,10 +117,8 @@ public class Turn {
 
         System.out.println("Turn " + turnNumber + " - " + player.getName());
 
-        // 💰 interest (ให้เฉพาะคนนี้)
         InterestCalculator.applyInterest(player, turnNumber);
 
-        // 🎮 เล่นแค่ player เดียว
         if (player.isBot()) {
             botPlayTurn(player);
         } else {
@@ -139,12 +137,11 @@ public class Turn {
             }
         }
 
-        // 🔄 สลับ player
         currentPlayerIndex++;
 
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0;
-            turnNumber++; // ✅ ครบ 2 คนค่อยขึ้น turn
+            turnNumber++;
 
             gameState.setCurrentTurn(turnNumber);
         }
@@ -158,7 +155,7 @@ public class Turn {
         System.out.println(player.getName() + " (BOT) turn:");
 
         //spawn cell
-        if (Math.random() < 0.2) {  // 40% chance
+        if (Math.random() < 0.2) {
             Position posToBuy = findHexToBuy(player);
             if (posToBuy != null && player.getBudget() >= Config.hex_purchase_cost) {
                 board.buySpawnZone(posToBuy, player);
@@ -170,7 +167,7 @@ public class Turn {
             spawnRandomMinion(player, true);
         }
 
-        //buy minion(60% chance)
+        //buy minion
         while (player.canSpawnMore() && Math.random() < 0.2 && player.getBudget() >= Config.spawn_cost) {
             spawnRandomMinion(player, false);
         }
@@ -404,7 +401,6 @@ public class Turn {
         long p1MinionCount = p1.getMinions().size();
         long p2MinionCount = p2.getMinions().size();
 
-        // 🟢 เช็คจำนวน minion
         if (p1MinionCount > p2MinionCount) {
             winner = p1.getName();
             winReason = "More minions remaining";
@@ -415,7 +411,6 @@ public class Turn {
             return;
         }
 
-        // 🟢 เช็ค HP
         long p1TotalHP = p1.getMinions().stream().mapToLong(Minion::getHp).sum();
         long p2TotalHP = p2.getMinions().stream().mapToLong(Minion::getHp).sum();
 
@@ -429,7 +424,6 @@ public class Turn {
             return;
         }
 
-        // 🟢 เช็ค budget
         if (p1.getBudget() > p2.getBudget()) {
             winner = p1.getName();
             winReason = "More budget remaining";

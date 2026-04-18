@@ -28,7 +28,6 @@ public class GameSession {
         };
     }
 
-    // 🔥 เพิ่มตรงนี้
     public static void setGame(GameState gs, Turn t, List<Player> ps) {
         gameState = gs;
         turn = t;
