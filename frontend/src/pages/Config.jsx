@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bg from "../assets/home-background.png";
 
+const API = import.meta.env.VITE_API_URL;
+
 function Config() {
   const [config, setConfig] = useState({});
   const [loading, setLoading] = useState(true);
@@ -9,7 +11,7 @@ function Config() {
 
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/config")
+    fetch(`${API}/api/config`)
       .then(res => res.json())
       .then(data => {
         setConfig(data);
