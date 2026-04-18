@@ -7,8 +7,9 @@ function Config() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+
   useEffect(() => {
-    fetch(`${API}/api/config`)
+    fetch("http://localhost:8080/api/config")
       .then(res => res.json())
       .then(data => {
         setConfig(data);
@@ -30,7 +31,7 @@ function Config() {
 
   // save config
   const saveConfig = () => {
-    fetch(`${API}/api/config`, {
+    fetch("http://localhost:8080/api/config", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
